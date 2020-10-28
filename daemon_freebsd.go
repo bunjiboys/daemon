@@ -255,9 +255,15 @@ func (bsd *bsdRecord) SetTemplate(tplStr string) error {
 	return nil
 }
 
+// SetUser - Sets the user the service will run as
 func (bsd *bsdRecord) SetUser(username string) error {
 	bsd.username = username
 	return nil
+}
+
+// SetPassword - Sets the password for the user that will run the service
+func (bsd *bsdRecord) SetPassword(password string) error {
+	return ErrUnsupportedSystem
 }
 
 var bsdConfig = `#!/bin/sh

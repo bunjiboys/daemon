@@ -196,6 +196,9 @@ type Daemon interface {
 
 	// SetUser - Sets the user the service will run as
 	SetUser(username string) error
+
+	// SetPassword - Sets the password for the user that will run the service. Only used for Windows services
+	SetPassword(password string) error
 }
 
 // Executable interface defines controlling methods of executable service

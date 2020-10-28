@@ -251,6 +251,11 @@ func (darwin *darwinRecord) SetUser(username string) error {
 	return nil
 }
 
+// SetPassword - Sets the password for the user that will run the service. Only used for macOS
+func (darwin *darwinRecord) SetPassword(_ string) error {
+	return ErrUnsupportedSystem
+}
+
 var propertyList = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">

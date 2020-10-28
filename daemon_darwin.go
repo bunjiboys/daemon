@@ -123,9 +123,9 @@ func (darwin *darwinRecord) Install(args ...string) (string, error) {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Path string
+			Name, Path, Username string
 			Args       []string
-		}{darwin.name, execPatch, args},
+		}{darwin.name, execPatch, darwin.username, args},
 	); err != nil {
 		return installAction + failed, err
 	}

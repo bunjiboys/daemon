@@ -20,6 +20,7 @@ type bsdRecord struct {
 	name         string
 	description  string
 	kind         Kind
+	username     string
 	dependencies []string
 }
 
@@ -72,7 +73,7 @@ func (bsd *bsdRecord) getCmd(cmd string) string {
 
 // Get the daemon properly
 func newDaemon(name, description string, kind Kind, dependencies []string) (Daemon, error) {
-	return &bsdRecord{name, description, kind, dependencies}, nil
+	return &bsdRecord{name, description, kind, "", dependencies}, nil
 }
 
 func execPath() (name string, err error) {
@@ -130,6 +131,10 @@ func (bsd *bsdRecord) Install(args ...string) (string, error) {
 		return installAction + failed, err
 	}
 
+	if bsd.username == "" {
+		bsd.username = "root"
+	}
+
 	templ, err := template.New("bsdConfig").Parse(bsdConfig)
 	if err != nil {
 		return installAction + failed, err
@@ -138,8 +143,8 @@ func (bsd *bsdRecord) Install(args ...string) (string, error) {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{bsd.name, bsd.description, execPatch, strings.Join(args, " ")},
+			Name, Description, Username, Path, Args string
+		}{bsd.name, bsd.description, bsd.username, execPatch, strings.Join(args, " ")},
 	); err != nil {
 		return installAction + failed, err
 	}
@@ -240,13 +245,18 @@ func (bsd *bsdRecord) Run(e Executable) (string, error) {
 }
 
 // GetTemplate - gets service config template
-func (linux *bsdRecord) GetTemplate() string {
+func (bsd *bsdRecord) GetTemplate() string {
 	return bsdConfig
 }
 
 // SetTemplate - sets service config template
-func (linux *bsdRecord) SetTemplate(tplStr string) error {
+func (bsd *bsdRecord) SetTemplate(tplStr string) error {
 	bsdConfig = tplStr
+	return nil
+}
+
+func (bsd *bsdRecord) SetUser(username string) error {
+	bsd.username = username
 	return nil
 }
 
@@ -269,7 +279,7 @@ rcvar="{{.Name}}_enable"
 command="{{.Path}}"
 pidfile="/var/run/$name.pid"
 
-start_cmd="/usr/sbin/daemon -p $pidfile -f $command {{.Args}}"
+start_cmd="/usr/sbin/daemon -p $pidfile -u {{.Username}} -f $command {{.Args}}"
 load_rc_config $name
 run_rc_command "$1"
 `

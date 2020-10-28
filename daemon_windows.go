@@ -25,12 +25,13 @@ type windowsRecord struct {
 	name         string
 	description  string
 	kind         Kind
+	username     string
 	dependencies []string
 }
 
 func newDaemon(name, description string, kind Kind, dependencies []string) (Daemon, error) {
 
-	return &windowsRecord{name, description, kind, dependencies}, nil
+	return &windowsRecord{name, description, kind, nil, dependencies}, nil
 }
 
 // Install the service
@@ -55,12 +56,18 @@ func (windows *windowsRecord) Install(args ...string) (string, error) {
 		return installAction + failed, ErrAlreadyRunning
 	}
 
-	s, err = m.CreateService(windows.name, execp, mgr.Config{
+	svcOpts := mgr.Config{
 		DisplayName:  windows.name,
 		Description:  windows.description,
 		StartType:    mgr.StartAutomatic,
 		Dependencies: windows.dependencies,
-	}, args...)
+	}
+
+	if windows.username != "" {
+		svcOpts.ServiceStartName = windows.username
+	}
+
+	s, err = m.CreateService(windows.name, execp, svcOpts, args...)
 	if err != nil {
 		return installAction + failed, err
 	}
@@ -345,11 +352,17 @@ func (windows *windowsRecord) Run(e Executable) (string, error) {
 }
 
 // GetTemplate - gets service config template
-func (linux *windowsRecord) GetTemplate() string {
+func (windows *windowsRecord) GetTemplate() string {
 	return ""
 }
 
 // SetTemplate - sets service config template
-func (linux *windowsRecord) SetTemplate(tplStr string) error {
+func (windows *windowsRecord) SetTemplate(tplStr string) error {
 	return errors.New(fmt.Sprintf("templating is not supported for windows"))
+}
+
+// SetUser - Sets the user the service will run as
+func (windows *windowsRecord) SetUser(username string) error {
+	windows.username = username
+	return nil
 }

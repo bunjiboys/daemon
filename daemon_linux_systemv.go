@@ -17,6 +17,7 @@ type systemVRecord struct {
 	name         string
 	description  string
 	kind         Kind
+	username     string
 	dependencies []string
 }
 
@@ -219,6 +220,12 @@ func (linux *systemVRecord) SetTemplate(tplStr string) error {
 	return nil
 }
 
+// SetUser - Sets the user the service will run as
+func (linux *systemVRecord) SetUser(username string) error {
+	linux.username = username
+	return nil
+}
+
 var systemVConfig = `#! /bin/sh
 #
 #       /etc/rc.d/init.d/{{.Name}}
@@ -273,7 +280,7 @@ start() {
     if ! [ -f $pidfile ]; then
         printf "Starting $servname:\t"
         echo "$(date)" >> $stdoutlog
-        $exec {{.Args}} >> $stdoutlog 2>> $stderrlog &
+        su -l {{.Username}} -c "$exec {{.Args}} >> $stdoutlog 2>> $stderrlog &"
         echo $! > $pidfile
         touch $lockfile
         success

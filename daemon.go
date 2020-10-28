@@ -193,6 +193,9 @@ type Daemon interface {
 
 	// Run - run executable service
 	Run(e Executable) (string, error)
+
+	// SetUser - Sets the user the service will run as
+	SetUser(username string) error
 }
 
 // Executable interface defines controlling methods of executable service

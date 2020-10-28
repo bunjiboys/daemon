@@ -38,6 +38,9 @@ var (
 
 	// ErrAlreadyStopped appears if try to stop already stopped service
 	ErrAlreadyStopped = errors.New("Service has already been stopped")
+
+	// ErrUserNameNotSupported appears if you try to set the service username on an unsupported service
+	ErrUserNameNotSupported = errors.New("Service kind does not support changing user")
 )
 
 // ExecPath tries to get executable path

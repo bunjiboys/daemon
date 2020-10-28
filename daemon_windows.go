@@ -26,6 +26,7 @@ type windowsRecord struct {
 	description  string
 	kind         Kind
 	username     string
+	password	 string
 	dependencies []string
 }
 
@@ -64,7 +65,11 @@ func (windows *windowsRecord) Install(args ...string) (string, error) {
 	}
 
 	if windows.username != "" {
+		if windows.password == "" {
+			return installAction + failed, ErrUserPasswordNotProvided
+		}
 		svcOpts.ServiceStartName = windows.username
+		svcOpts.Password = windows.password
 	}
 
 	s, err = m.CreateService(windows.name, execp, svcOpts, args...)
@@ -364,5 +369,14 @@ func (windows *windowsRecord) SetTemplate(tplStr string) error {
 // SetUser - Sets the user the service will run as
 func (windows *windowsRecord) SetUser(username string) error {
 	windows.username = username
+	return nil
+}
+
+// SetPassword - Sets the password for the user that will run the service
+func (windows *windowsRecord) SetPassword(password string) error {
+	if password == "" {
+		return ErrUserPasswordNotProvided
+	}
+	windows.password = password
 	return nil
 }

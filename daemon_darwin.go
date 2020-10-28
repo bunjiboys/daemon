@@ -104,12 +104,17 @@ func (darwin *darwinRecord) Install(args ...string) (string, error) {
 	}
 
 	if darwin.username == "" {
-		if darwin.kind == UserAgent || darwin.kind == GlobalAgent {
+		if darwin.kind == UserAgent {
 			usr, err := user.Current()
 			if err != nil {
 				return installAction + failed, err
 			}
 			darwin.username = usr.Username
+		} else if darwin.kind == GlobalAgent {
+			usr := os.Getenv("SUDO_USER")
+			if usr != "" {
+				darwin.username = usr
+			}
 		} else {
 			darwin.username = "root"
 		}

@@ -70,6 +70,7 @@ func (windows *windowsRecord) Install(args ...string) (string, error) {
 		}
 		svcOpts.ServiceStartName = windows.username
 		svcOpts.Password = windows.password
+		fmt.Println(svcOpts)
 	}
 
 	s, err = m.CreateService(windows.name, execp, svcOpts, args...)

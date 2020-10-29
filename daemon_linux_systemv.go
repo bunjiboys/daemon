@@ -83,11 +83,15 @@ func (linux *systemVRecord) Install(args ...string) (string, error) {
 		return installAction + failed, err
 	}
 
+	if linux.username == "" {
+		linux.username = "root"
+	}
+
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{linux.name, linux.description, execPatch, strings.Join(args, " ")},
+			Name, Description, Username, Path, Args string
+		}{linux.name, linux.description, linux.username, execPatch, strings.Join(args, " ")},
 	); err != nil {
 		return installAction + failed, err
 	}

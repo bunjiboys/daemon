@@ -86,8 +86,8 @@ func (linux *upstartRecord) Install(args ...string) (string, error) {
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{linux.name, linux.description, execPatch, strings.Join(args, " ")},
+			Name, Description, Username, Path, Args string
+		}{linux.name, linux.description, "", execPatch, strings.Join(args, " ")},
 	); err != nil {
 		return installAction + failed, err
 	}

@@ -32,7 +32,7 @@ type windowsRecord struct {
 
 func newDaemon(name, description string, kind Kind, dependencies []string) (Daemon, error) {
 
-	return &windowsRecord{name, description, kind, "", dependencies}, nil
+	return &windowsRecord{name, description, kind, "", "",dependencies}, nil
 }
 
 // Install the service

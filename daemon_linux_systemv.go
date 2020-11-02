@@ -83,11 +83,15 @@ func (linux *systemVRecord) Install(args ...string) (string, error) {
 		return installAction + failed, err
 	}
 
+	if linux.username == "" {
+		linux.username = "root"
+	}
+
 	if err := templ.Execute(
 		file,
 		&struct {
-			Name, Description, Path, Args string
-		}{linux.name, linux.description, execPatch, strings.Join(args, " ")},
+			Name, Description, Username, Path, Args string
+		}{linux.name, linux.description, linux.username, execPatch, strings.Join(args, " ")},
 	); err != nil {
 		return installAction + failed, err
 	}
@@ -224,6 +228,11 @@ func (linux *systemVRecord) SetTemplate(tplStr string) error {
 func (linux *systemVRecord) SetUser(username string) error {
 	linux.username = username
 	return nil
+}
+
+// SetPassword - Sets the password for the user that will run the service. Only used for macOS
+func (linux *systemVRecord) SetPassword(_ string) error {
+	return ErrUnsupportedSystem
 }
 
 var systemVConfig = `#! /bin/sh

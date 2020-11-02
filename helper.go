@@ -41,6 +41,9 @@ var (
 
 	// ErrUserNameNotSupported appears if you try to set the service username on an unsupported service
 	ErrUserNameNotSupported = errors.New("Service kind does not support changing user")
+
+	// ErrUserPasswordNotProvided appears if you try and install a service on windows with a non-system account user
+	ErrUserPasswordNotProvided = errors.New("Password must be provided if using alternate user on Windows")
 )
 
 // ExecPath tries to get executable path
